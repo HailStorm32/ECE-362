@@ -58,6 +58,10 @@ test:
 	@echo ""
 	./$(EXE)  House -l Boat -h apple
 	@echo ""
+	./$(EXE)  House Boat apple GOAT trEe
+	@echo ""
+	./$(EXE)  House hat apple GOAT hat
+	@echo ""
 
 help:
 	@echo "all compile clean test help"

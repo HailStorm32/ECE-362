@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <climits>
+#include <string.h>
 
 int getScore(const char *str);
 
@@ -12,16 +13,23 @@ struct optionFlags
 
 int main(int argv, char *argc[])
 {
+    uint8_t sortedIndxes2Prnt[20];
     bool invalidArg = false;
-    int currHighScore = 0;
-    uint8_t currHighestStr = 0;
-    int currLowScore = INT_MAX;
-    uint8_t currLowestStr = 0;
+    bool isOutOfOrder = true;
+    uint8_t tempIndx = 0;
+    uint8_t indxHolder = 0;
+    uint8_t totalNumOfStr = 0;
     optionFlags flags;
 
     //Inintialize option flags
     flags.highest = false;
     flags.lowest = false;
+
+    //Initialize array
+    for(uint8_t indx = 0; indx < 20; indx++)
+    {
+        sortedIndxes2Prnt[indx] = 255;
+    }
 
     //Only continue if we have arguments
     if(argv <= 1)
@@ -60,14 +68,13 @@ int main(int argv, char *argc[])
                             break;
                     }
                     indx2++;
-
                 }
-
             }
             //Make sure there is atleast one string
             else if(argc[indx][0] != '-' && argc[indx][0] != '\0')
             {
                 hasStr = true;
+                totalNumOfStr++;
             }
         }
 
@@ -87,72 +94,77 @@ int main(int argv, char *argc[])
         return 1;
     }
 
+    tempIndx = 0;
+
+    //Get the indexes of where strings are stored in the argc array
+    for(uint8_t indx = 1; indx < argv; indx++)
+    {
+        //Only get non-options
+        if(argc[indx][0] != '-')
+        {
+            sortedIndxes2Prnt[tempIndx] = indx;
+            tempIndx++;
+        }
+    }
+
+    //Sort the strings numerically based on the total ascii value of the letters
+    //Continue to loop until we can go though without having to reorder
+    while(isOutOfOrder)
+    {
+        isOutOfOrder = false;
+
+        //Cylcle through the list
+        for(uint8_t currIndxPtr = 0; 
+                currIndxPtr < totalNumOfStr - 1; currIndxPtr++)
+        {
+            //If the current and adjacent cell are out of order
+            if(getScore(argc[sortedIndxes2Prnt[currIndxPtr]]) > 
+                    getScore(argc[sortedIndxes2Prnt[currIndxPtr + 1]]))
+            {
+                //Store the current value in the cell
+                indxHolder = sortedIndxes2Prnt[currIndxPtr]; 
+                
+                //Move value from the right cell into current cell
+                sortedIndxes2Prnt[currIndxPtr] = 
+                    sortedIndxes2Prnt[currIndxPtr + 1]; 
+
+                //Move stored value into right cell
+                sortedIndxes2Prnt[currIndxPtr + 1] = indxHolder; 
+                
+                isOutOfOrder = true;
+            }
+        }
+    }
+
 
     //Begin running options
 
     if(flags.highest)
     {
-        //Cycle through arguments 
-        for(uint8_t indx = 1; indx < argv; indx++)
-        {
-            //Only get non-options and compare scores
-            if(argc[indx][0] != '-')
-            {
-                int currScore = 0;
-
-                currScore = getScore(argc[indx]);
-
-                //Remember the index for the string 
-                //if it it has the largest score
-                if(currHighScore < currScore)
-                {
-                    currHighScore = currScore;
-                    currHighestStr = indx;
-                }
-            }
-        }
-
-        printf("high: %s\n", argc[currHighestStr]);
+        printf("high: %s\n", argc[sortedIndxes2Prnt[totalNumOfStr - 1]]);
     }
 
     if(flags.lowest)
     {
-        //Cycle through arguments 
-        for(uint8_t indx = 1; indx < argv; indx++)
-        {
-            //Only get non-options and compare scores
-            if(argc[indx][0] != '-')
-            {
-                int currScore = 0;
-
-                currScore = getScore(argc[indx]);
-
-                //Remember the index for the string 
-                //if it it has the largest score
-                if(currLowScore > currScore)
-                {
-                    currLowScore = currScore;
-                    currLowestStr = indx;
-                }
-            }
-        }
-
-        printf("low: %s\n", argc[currLowestStr]);
+        printf("low: %s\n", argc[sortedIndxes2Prnt[0]]);
     }
 
     //No options given, print all strings
     if(!flags.lowest && !flags.highest)
     {
-        for(uint8_t indx = 1; indx < argv; indx++)
+        int lastPrinted = 0;
+        
+        for(uint8_t indx = 0; indx < totalNumOfStr; indx++)
         {
-            //Only print non-options
-            if(argc[indx][0] != '-')
+            //Dont print a duplicate value
+            if(lastPrinted != getScore(argc[sortedIndxes2Prnt[indx]]))
             {
-                printf("\n%s ", argc[indx]);
+                printf("%s\n", argc[sortedIndxes2Prnt[indx]]);
+                lastPrinted = getScore(argc[sortedIndxes2Prnt[indx]]);
             }
         }
     }
-
+    return 0;
 }
 
 int getScore(const char *str)
