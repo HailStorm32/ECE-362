@@ -18,7 +18,7 @@ OBJ := $(patsubst %.c,%.o,$(wildcard $(SRC_DIR)/*.c))
 #All .h files
 HEADERS = $(wildcard $(IDIR)/*.h)
 
-CFLAGS = -Wall -I$(IDIR)/
+CFLAGS = -Wall -I$(IDIR)/ -std=c++11 #c++11 is for compatibility with PSU servers
 LDFLAGS = 
 EXE = filter
 
