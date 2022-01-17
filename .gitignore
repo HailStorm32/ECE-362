@@ -1,2 +1,4 @@
 filter
+log
+header
 *.zip
