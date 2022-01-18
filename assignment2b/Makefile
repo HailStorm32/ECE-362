@@ -20,7 +20,7 @@ HEADERS = $(wildcard $(IDIR)/*.h)
 
 CFLAGS = -Wall -I$(IDIR)/ -std=c++11 #c++11 is for compatibility with PSU servers
 LDFLAGS = 
-EXE = filter
+EXE = header
 
 .PHONY: all compile clean test 
 
@@ -50,17 +50,17 @@ test:
 	@echo "compiled"
 	@echo "running code "
 	@echo "--------------------"
-	./$(EXE) -l Tree Boat apple
+	./$(EXE)
 	@echo ""
-	./$(EXE) -hl tree Boat apple
+	./$(EXE)
 	@echo ""
-	./$(EXE)  House -lh Boat apple
+	./$(EXE)
 	@echo ""
-	./$(EXE)  House -l Boat -h apple
+	./$(EXE)
 	@echo ""
-	./$(EXE)  House Boat apple GOAT trEe
+	./$(EXE)
 	@echo ""
-	./$(EXE)  House hat apple GOAT hat
+	./$(EXE)
 	@echo ""
 
 help:

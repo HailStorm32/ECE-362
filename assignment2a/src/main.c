@@ -29,14 +29,12 @@ int main(int argv, char* argc[])
     if(logFD <= -1)
     {
         printError("\nError opening output.log: ");
-        return 1;
     }
 
     //Write oppening line of ==== to log file
     if(write(logFD, "================\n", 17) <= -1)
     {
         printError("\nError writing to log file: ");
-        return 1;
     }
 
     while(true)
@@ -48,7 +46,6 @@ int main(int argv, char* argc[])
         if(numOfCharRead <= -1)
         {
             printError("\nError reading stdin: ");
-            return 1;
         }
 
         //Exit if we recive a ^D
@@ -62,14 +59,12 @@ int main(int argv, char* argc[])
         if(write(STDOUT_FILENO, inputBuff, numOfCharRead) <= -1)
         {
             printError("\nError writing to stdout: ");
-            return 1;
         }
 
         //Save what user said to the log
         if(write(logFD, inputBuff, numOfCharRead) <= -1)
         {
             printError("\nError writing to log file: "); 
-            return 1;
         }
 
         //Clear the first char, in case we get a ^D. For some reason a ^D wont
@@ -83,4 +78,5 @@ void printError(const char* errorMsg)
     write(STDERR_FILENO, errorMsg, strlen(errorMsg));
     write(STDERR_FILENO, strerror(errno), strlen(strerror(errno)));
     write(STDERR_FILENO, "\n", 1);
+    exit(1);
 }
