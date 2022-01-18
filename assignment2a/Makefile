@@ -50,18 +50,13 @@ test:
 	@echo "compiled"
 	@echo "running code "
 	@echo "--------------------"
-	./$(EXE) 
+	./$(EXE) < test0.txt 
 	@echo ""
-	./$(EXE)
+	./$(EXE) < test1.txt 
 	@echo ""
-	./$(EXE)
+	./$(EXE) < test2.txt 
 	@echo ""
-	./$(EXE)
-	@echo ""
-	./$(EXE)
-	@echo ""
-	./$(EXE)
-	@echo ""
+	cat output.log
 
 help:
 	@echo "all compile clean test help"

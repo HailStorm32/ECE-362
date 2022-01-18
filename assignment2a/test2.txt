@@ -1,0 +1,3 @@
+Last test
+next I will
+print the output.log
