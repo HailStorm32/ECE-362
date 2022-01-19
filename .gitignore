@@ -3,3 +3,4 @@ log
 header
 *.zip
 output.log
+*.o

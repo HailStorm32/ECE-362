@@ -23,10 +23,7 @@ int main(int argv, char* argc[])
     uint8_t numOfCharRead = -1;
 
     //Open (and create if needed) the log file
-    logFD = open("output.log", O_APPEND | O_CREAT | O_WRONLY, S_IRWXU);
-
-    //Send error if opening file failed
-    if(logFD <= -1)
+    if((logFD = open("output.log", O_APPEND | O_CREAT | O_WRONLY, S_IRWXU)) <= -1)
     {
         printError("\nError opening output.log: ");
     }
@@ -40,10 +37,7 @@ int main(int argv, char* argc[])
     while(true)
     {
         //Read user input
-        numOfCharRead = read(STDIN_FILENO, inputBuff, 200);
-
-        //Send error if reading failed
-        if(numOfCharRead <= -1)
+        if((numOfCharRead = read(STDIN_FILENO, inputBuff, 200)) <= -1)
         {
             printError("\nError reading stdin: ");
         }

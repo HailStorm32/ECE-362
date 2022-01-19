@@ -50,7 +50,7 @@ test:
 	@echo "compiled"
 	@echo "running code "
 	@echo "--------------------"
-	./$(EXE)
+	./$(EXE) test.txt -5
 	@echo ""
 	./$(EXE)
 	@echo ""
