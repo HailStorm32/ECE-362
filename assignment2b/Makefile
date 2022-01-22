@@ -52,16 +52,13 @@ test:
 	@echo "--------------------"
 	./$(EXE) test.txt -5
 	@echo ""
-	./$(EXE)
+	./$(EXE) test.txt
 	@echo ""
-	./$(EXE)
+	./$(EXE) test.txt -15
 	@echo ""
-	./$(EXE)
+	./$(EXE) test.txt -2
 	@echo ""
-	./$(EXE)
-	@echo ""
-	./$(EXE)
-	@echo ""
+	./$(EXE) -4
 
 help:
 	@echo "all compile clean test help"

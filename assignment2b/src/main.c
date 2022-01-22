@@ -12,7 +12,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <cstdint>
-#include <cstdio> //FOR DEBUG
 #include <stdlib.h>
 #include <cstring>
 
@@ -25,7 +24,6 @@ int main(int argv, char* argc[])
     bool hasNumOfChars = false;
     int numOfChars = 0;
     int fileFD = -1;
-    char buffer[10];
     char* line = (char*)malloc(sizeof(char)*100);
 
     if(argv == 2 || argv == 3)
@@ -62,43 +60,39 @@ int main(int argv, char* argc[])
     //Run the options
     if(hasNumOfChars && hasFileName)
     {
-        //readLine(fileFD, line);
-        //printf("\nTEST: %s\n\n", line);
-
         for(uint8_t indx = 0; indx != numOfChars; indx++)
         {
-            //memset(line, '9', strlen(line));
             readLine(fileFD, line);
             if(write(STDOUT_FILENO, line, strlen(line)) <= -1)
             {
                 printError(1, "\nError: Failed to write to stdout\n");
             }
-            printf("\n");
+            write(STDOUT_FILENO, "\n", 1);
         }
-        return 1;
+        return 0;
     }
     else if(hasNumOfChars && !hasFileName)
     {
         for(uint8_t indx = 0; indx != numOfChars; indx++)
         {
-            //memset(line, '9', strlen(line));
             readLine(STDIN_FILENO, line);
             if(write(STDOUT_FILENO, line, strlen(line)) <= -1)
             {
                 printError(1, "\nError: Failed to write to stdout\n");
             }
-            printf("\n");
+            write(STDOUT_FILENO, "\n", 1);
         }
+        return 0;
     }
     else if(!hasNumOfChars && hasFileName)
     {
-
         readLine(fileFD, line);
         if(write(STDOUT_FILENO, line, strlen(line)) <= -1)
         {
             printError(1, "\nError: Failed to write to stdout\n");
         }
-        printf("\n");
+        write(STDOUT_FILENO, "\n", 1);
+        return 0;
     }
 }
 
@@ -129,13 +123,6 @@ void readLine(int fileFD, char* line)
     static char buffer[BUFF_SIZE];
     static bool firstRun = false;
 
-    /*printf("BUFFER ENTER: ");
-    for(int i = 0; i < BUFF_SIZE; i++)
-    {
-        printf("%c, ", buffer[i]);
-    }
-    printf("\n");*/
-
     memset(line, '\0', strlen(line));
 
     //Gather data until we hit a newline
@@ -143,8 +130,6 @@ void readLine(int fileFD, char* line)
     {
         if(!firstRun)
         {
-            //        memset(buffer, '\0', strlen(buffer));
-
             //Read 10bytes
             if(read(fileFD, buffer, 10) == 0)
             {
@@ -152,12 +137,6 @@ void readLine(int fileFD, char* line)
             }
             firstRun = true;
         }
-        /*printf("BUFFER: ");
-        for(int i = 0; i < BUFF_SIZE; i++)
-        {
-            printf("%c, ", buffer[i]);
-        }
-        printf("\n");*/
 
         //Save the line if we already have it in the buffer
         if(strchr(buffer, '\n') != NULL)
@@ -165,13 +144,6 @@ void readLine(int fileFD, char* line)
             while(buffer[buffIndx] != '\n')
             {
                 line[lineIndx] = buffer[buffIndx];
-                /*printf("\n\nL:%c | B:%c\n\n", line[lineIndx], buffer[buffIndx]);
-                printf("\nLINE: ");
-                for(int i = 0; i < 100; i++)
-                {
-                    printf("%c, ", line[i]);
-                }*/
-
                 lineIndx++;
                 buffIndx++;
             }
@@ -214,7 +186,6 @@ void readLine(int fileFD, char* line)
         {
             //Write the whole buffer to line
             while(buffer[buffIndx] != '\0')
-                //while(buffIndx < BUFF_SIZE)
             {
                 line[lineIndx] = buffer[buffIndx];
 
@@ -222,7 +193,6 @@ void readLine(int fileFD, char* line)
                 buffIndx++;
             }
 
-            //memset(buffer, '\0', strlen(buffer));
             buffIndx = 0;
 
             //Read 10bytes
@@ -232,5 +202,4 @@ void readLine(int fileFD, char* line)
             }
         }
     }
-
 }
