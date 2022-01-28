@@ -4,9 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdint.h>
-
-#include <stdio.h> //FOR DEBUG
-//#define DEBUG //FOR DEBUG
+#include "../include/itoa.h"
 
 void printError(const uint8_t errorType, const char* errorMsg);
 long getTime();
@@ -15,8 +13,10 @@ void print(char *msg);
 int main(int argc, char *argv[])
 {
     char *cmdArgs[20]; 
+    char timeRanStr[10];
     long startTime = 0;
     long totalTime = 0;
+    int forkPid = -1;
 
     //Initalize array
     memset(cmdArgs, '\0', sizeof(cmdArgs));
@@ -31,26 +31,38 @@ int main(int argc, char *argv[])
     for(uint8_t indx = 1; indx < argc; indx++)
     {
         cmdArgs[indx - 1] = argv[indx]; 
-
-        #ifdef DEBUG
-        printf("\nArgs %d: %s \n", indx, cmdArgs[indx-1]);
-        #endif
     }
 
     //Get current time stamp
     startTime = getTime();
 
-    //Execute the command
-    if(execvp(cmdArgs[0], cmdArgs) <= -1)
-    {
-        printError(1, "Error running command: \n ");
-    }
-    
-    totalTime = getTime() - startTime;
+    //Fork off a new process
+    forkPid = fork();
 
-    print("Time to run: ");
-    print(itoa(totalTime,NULL, 10));
-    print(" seconds\n");
+    if(forkPid < 0)
+    {
+        printError(1, "\nError fork failed\n"); 
+    }
+    else if(forkPid == 0)//If child process
+    {
+        //Execute the command
+        if(execvp(cmdArgs[0], cmdArgs) <= -1)
+        {
+            printError(1, "Error running command: \n ");
+        }
+        exit(0);
+    }
+    else
+    {
+        //Wait for child to finish
+        wait(forkPid);
+
+        totalTime = getTime() - startTime;
+
+        print("Time to run: ");
+        print(itoa(totalTime, timeRanStr, 10));
+        print(" seconds\n");
+    }
     return 0;
 }
 
