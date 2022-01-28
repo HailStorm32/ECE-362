@@ -1,3 +1,8 @@
+/* 
+ * Name: Demetri Van Sickle
+ * Class: ECE 362
+ * Date: 1/27/22
+ */
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
