@@ -137,8 +137,10 @@ int main(int argc, char *argv[])
                 productTotal *= numbers[indx];
                 printf("%d, ", numbers[indx]);
             }
+            printf("PROT: %d\n", productTotal);
             memset(buff, '\0', NUM_BUFF_SIZE);
             itoa(productTotal, buff, 10); 
+            printf("PROT_str: %s\n", buff);
 
             print(STDOUT_FILENO, "\nProduct:");
             print(STDOUT_FILENO, buff);
@@ -149,50 +151,52 @@ int main(int argc, char *argv[])
             close(productPipe[1]);
             exit(0);
         }
-    else//If parent
-    {
-        char strNumbers[NUM_BUFF_SIZE];
-        bool ending = false;
-
-        //Close reading pipes b/c we dont need them
-        close(sumPipe[0]);
-        close(productPipe[0]);
-
-        memset(buff, '\0', BUFF_SIZE);
-
-        //Get data from user
-        while(true)
+        else//If parent
         {
-            numOfCharRead += readData(STDIN_FILENO, buff, BUFF_SIZE);
+            char cumulativeBuff[NUM_BUFF_SIZE];
 
-            //Exit if we recive a ^D
-            if(buff[0] == '\0' )
+            //Close reading pipes b/c we dont need them
+            close(sumPipe[0]);
+            close(productPipe[0]);
+
+            memset(buff, '\0', BUFF_SIZE);
+
+            //Get data from user
+            while(true)
             {
-                break;
+                numOfCharRead += readData(STDIN_FILENO, buff, BUFF_SIZE);
+
+                //Exit if we recive a ^D
+                if(buff[0] == '\0' )
+                {
+                    break;
+                }
+
+                //Add on to the cumulitave buffer 
+                strcat(cumulativeBuff, buff);
+                memset(buff, '\0', BUFF_SIZE);
             }
-            strcat(strNumbers, buff);
-            buff[0] = '\0';
-        }
+            printf("strNum: %s\n", cumulativeBuff);
 
-        //Validate data
-        if(!validateString(strNumbers, numOfCharRead))
-        {
-            printError(0,"");
-        }
-        else
-        {
-            print(sumPipe[1], strNumbers);
+            //Validate data
+            if(!validateString(cumulativeBuff, numOfCharRead))
+            {
+                printError(0,"");
+            }
+            else
+            {
+                print(sumPipe[1], cumulativeBuff);
+                wait(NULL);
+                print(productPipe[1], cumulativeBuff);
+            }
             wait(NULL);
-            print(productPipe[1], strNumbers);
-        }
-        wait(NULL);
 
-        //Close writing pipes
-        close(sumPipe[1]);
-        close(productPipe[1]);
+            //Close writing pipes
+            close(sumPipe[1]);
+            close(productPipe[1]);
+        }
     }
-}
-return 0;
+    return 0;
 }
 
 uint8_t parseData(char *charBuffer, int *numArray, int numOfChars)
@@ -287,7 +291,7 @@ bool validateString(char *charBuffer, int numOfChars)
     //Count the number of spaces and numbers
     for(int indx = 0; indx < numOfChars; indx++)
     {
-        if(charBuffer[indx] == 32)
+        if(charBuffer[indx] == 32 || charBuffer[indx] == '\n')
         {
             numOfSpaces++;
         }

@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdio.h>
 
 //Credit: rick-rick-rick on Stackoveflow
 //https://stackoverflow.com/a/46732059
