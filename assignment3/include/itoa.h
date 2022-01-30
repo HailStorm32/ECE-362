@@ -1,84 +1,76 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-//Credit: rick-rick-rick on Stackoveflow
-//https://stackoverflow.com/a/46732059
+//Credit: waaagh on Stackoveflow
+//https://stackoverflow.com/a/16095691
+#define INT_LEN (10)
+#define HEX_LEN (8)
+#define BIN_LEN (32)
+#define OCT_LEN (11)
 
-/*
-=============
-itoa
-
-Convert integer to string
-
-PARAMS:
-- value     A 64-bit number to convert
-- str       Destination buffer; should be 66 characters long for radix2, 24 - radix8, 22 - radix10, 18 - radix16.
-- radix     Radix must be in range -36 .. 36. Negative values used for signed numbers.
-=============
-*/
-
-char* itoa (unsigned long long  value,  char str[],  int radix)
+static char *  my_itoa ( int value, char * str, int base )
 {
-    char        buf [66];
-    char*       dest = buf + sizeof(buf);
-    bool     sign = false;
-
-    if (value == 0) {
-        memcpy (str, "0", 2);
-        return str;
-    }
-
-    if (radix < 0) {
-        radix = -radix;
-        if ( (long long) value < 0) {
-            value = -value;
-            sign = true;
-        }
-    }
-
-    *--dest = '\0';
-
-    switch (radix)
+    int i,n =2,tmp;
+    char buf[BIN_LEN+1];
+    
+    switch(base)
     {
-    case 16:
-        while (value) {
-            * --dest = '0' + (value & 0xF);
-            if (*dest > '9') *dest += 'A' - '9' - 1;
-            value >>= 4;
-        }
-        break;
-    case 10:
-        while (value) {
-            *--dest = '0' + (value % 10);
-            value /= 10;
-        }
-        break;
-
-    case 8:
-        while (value) {
-            *--dest = '0' + (value & 7);
-            value >>= 3;
-        }
-        break;
-
-    case 2:
-        while (value) {
-            *--dest = '0' + (value & 1);
-            value >>= 1;
-        }
-        break;
-
-    default:            // The slow version, but universal
-        while (value) {
-            *--dest = '0' + (value % radix);
-            if (*dest > '9') *dest += 'A' - '9' - 1;
-            value /= radix;
-        }
-        break;
+        case 16:
+            for(i = 0;i<HEX_LEN;++i)
+            {
+                if(value/base>0)
+                {
+                    n++;
+                }
+            }
+            snprintf(str, n, "%x" ,value);
+            break;
+        case 10:
+            for(i = 0;i<INT_LEN;++i)
+            {
+                if(value/base>0)
+                {
+                    n++;
+                }
+            }
+            snprintf(str, 100, "%d" ,value);
+            break;
+        case 8:
+            for(i = 0;i<OCT_LEN;++i)
+            {
+                if(value/base>0)
+                {
+                    n++;
+                }
+            }
+            snprintf(str, n, "%o" ,value);
+            break;
+        case 2:
+            for(i = 0,tmp = value;i<BIN_LEN;++i)
+            {
+                if(tmp/base>0)
+                {
+                    n++;
+                }
+                tmp/=base;
+            }
+            for(i = 1 ,tmp = value; i<n;++i)
+            {
+                if(tmp%2 != 0)
+                {
+                    buf[n-i-1] ='1';
+                }
+                else
+                {
+                    buf[n-i-1] ='0';
+                }
+                tmp/=base;
+            }
+            buf[n-1] = '\0';
+            strcpy(str,buf);
+            break;
+        default:
+            return NULL;
     }
-
-    if (sign) *--dest = '-';
-
-    memcpy (str, dest, buf +sizeof(buf) - dest);
     return str;
 }

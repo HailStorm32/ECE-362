@@ -11,8 +11,8 @@
 #include <stdint.h>
 #include "../include/itoa.h"
 
-#include <stdio.h>//DEBUG
-#define DEBUG //DEBUG
+//#include <stdio.h>//DEBUG
+//#define DEBUG //DEBUG
 
 const int BUFF_SIZE = 100;
 const int NUM_BUFF_SIZE = 500;
@@ -54,23 +54,6 @@ int main(int argc, char *argv[])
         close(sumPipe[1]);
         numOfCharRead = readData(sumPipe[0], buff, NUM_BUFF_SIZE);
 
-        //If we got signal from parent to exit
-        if(strncmp(buff, "quit", 3) == 0)
-        {
-            printf("QUIT");
-            memset(buff, '\0', NUM_BUFF_SIZE);
-            itoa(sumTotal, buff, 10); 
-
-            print(STDOUT_FILENO, "\nSum: ");
-            print(STDOUT_FILENO, buff);
-            print(STDOUT_FILENO, "\n");
-
-            //Close reading pipe and exit
-            close(sumPipe[0]);
-            close(sumPipe[1]);
-            exit(0);
-        }
-
         //Extract numbers from buffer
         numOfNums = parseData(buff, numbers, numOfCharRead);
 
@@ -78,10 +61,10 @@ int main(int argc, char *argv[])
         for(uint8_t indx = 0; indx < numOfNums; indx++)
         {
             sumTotal += numbers[indx];
-            printf("%d, ", numbers[indx]);
+            //printf("%d, ", numbers[indx]);
         }
         memset(buff, '\0', NUM_BUFF_SIZE);
-        itoa(sumTotal, buff, 10); 
+        my_itoa(sumTotal, buff, 10); 
 
         print(STDOUT_FILENO, "\nSum:");
         print(STDOUT_FILENO, buff);
@@ -111,23 +94,6 @@ int main(int argc, char *argv[])
             close(productPipe[1]);
             numOfCharRead = readData(productPipe[0], buff, NUM_BUFF_SIZE);
 
-            //If we got signal from parent to exit
-            if(strncmp(buff, "quit", 3) == 0)
-            {
-                printf("QUIT");
-                memset(buff, '\0', NUM_BUFF_SIZE);
-                itoa(productTotal, buff, 10); 
-
-                print(STDOUT_FILENO, "\nProduct: ");
-                print(STDOUT_FILENO, buff);
-                print(STDOUT_FILENO, "\n");
-
-                //Close reading pipe and exit
-                close(productPipe[0]);
-                close(productPipe[1]);
-                exit(0);
-            }
-
             //Extract numbers from buffer
             numOfNums = parseData(buff, numbers, numOfCharRead);
 
@@ -135,12 +101,12 @@ int main(int argc, char *argv[])
             for(uint8_t indx = 0; indx < numOfNums; indx++)
             {
                 productTotal *= numbers[indx];
-                printf("%d, ", numbers[indx]);
+                //printf("%d, ", numbers[indx]);
             }
-            printf("PROT: %d\n", productTotal);
+            //printf("PROT: %d\n", productTotal);
             memset(buff, '\0', NUM_BUFF_SIZE);
-            itoa(productTotal, buff, 10); 
-            printf("PROT_str: %s\n", buff);
+            my_itoa(productTotal, buff, 10); 
+            //printf("PROT_str: %s\n", buff);
 
             print(STDOUT_FILENO, "\nProduct:");
             print(STDOUT_FILENO, buff);
@@ -176,7 +142,6 @@ int main(int argc, char *argv[])
                 strcat(cumulativeBuff, buff);
                 memset(buff, '\0', BUFF_SIZE);
             }
-            printf("strNum: %s\n", cumulativeBuff);
 
             //Validate data
             if(!validateString(cumulativeBuff, numOfCharRead))
