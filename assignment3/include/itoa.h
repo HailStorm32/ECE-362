@@ -5,7 +5,7 @@
 //https://en.wikibooks.org/wiki/C_Programming/stdlib.h/itoa
 
 /* itoa:  convert n to characters in s */
-void itoa(int n, char s[])
+char * itoa(int n, char s[])
 {
     int i, sign;
 
@@ -19,6 +19,7 @@ void itoa(int n, char s[])
         s[i++] = '-';
     s[i] = '\0';
     reverse(s);
+    return s;
 }
 
 /* reverse:  reverse string s in place */

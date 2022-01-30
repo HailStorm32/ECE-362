@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         totalTime = getTime() - startTime;
 
         print("Time to run: ");
-        print(itoa(totalTime, timeRanStr, 10));
+        print(itoa(totalTime, timeRanStr));
         print(" seconds\n");
     }
     return 0;

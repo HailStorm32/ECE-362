@@ -16,6 +16,7 @@
 
 const int BUFF_SIZE = 100;
 const int NUM_BUFF_SIZE = 500;
+const char FILLER_CHAR = '#';
 
 void printError(const uint8_t errorType, const char* errorMsg);
 void print(int fd, char *msg);
@@ -103,10 +104,8 @@ int main(int argc, char *argv[])
                 productTotal *= numbers[indx];
                 //printf("%d, ", numbers[indx]);
             }
-            //printf("PROT: %d\n", productTotal);
             memset(buff, '\0', NUM_BUFF_SIZE);
             itoa(productTotal, buff); 
-            //printf("PROT_str: %s\n", buff);
 
             print(STDOUT_FILENO, "\nProduct:");
             print(STDOUT_FILENO, buff);
@@ -125,7 +124,7 @@ int main(int argc, char *argv[])
             close(sumPipe[0]);
             close(productPipe[0]);
 
-            memset(buff, '\0', BUFF_SIZE);
+            memset(buff, FILLER_CHAR, BUFF_SIZE);
 
             //Get data from user
             while(true)
@@ -140,7 +139,10 @@ int main(int argc, char *argv[])
 
                 //Add on to the cumulitave buffer 
                 strcat(cumulativeBuff, buff);
-                memset(buff, '\0', BUFF_SIZE);
+                memset(buff, FILLER_CHAR, BUFF_SIZE);
+
+                //Reset the first char in case we get a ^D
+                buff[0] = '\0';
             }
 
             //Validate data
@@ -150,6 +152,7 @@ int main(int argc, char *argv[])
             }
             else
             {
+                //Pipe data to the children
                 print(sumPipe[1], cumulativeBuff);
                 wait(NULL);
                 print(productPipe[1], cumulativeBuff);
@@ -191,8 +194,9 @@ uint8_t parseData(char *charBuffer, int *numArray, int numOfChars)
             strNumIndx++;
         }
 
-        //Move buffIndx to next number (move past the space) 
-        while(charBuffer[buffIndx] == 32 || charBuffer[buffIndx] == '\n')
+        //Move buffIndx to next number (move over a space, newline or filler char) 
+        while(charBuffer[buffIndx] == 32 || charBuffer[buffIndx] == '\n' 
+                || charBuffer[buffIndx] == FILLER_CHAR)
         {
             buffIndx++;
         }
@@ -200,11 +204,7 @@ uint8_t parseData(char *charBuffer, int *numArray, int numOfChars)
         //Save the number
         numArray[rtnArrayIndx] = atoi(strNumber);
 
-        //Dont count zeros
-        if(numArray[rtnArrayIndx] != 0)
-        { 
-            numOfNums++;
-        }
+        numOfNums++;
         rtnArrayIndx++;
         strNumIndx = 0;
 
@@ -218,7 +218,7 @@ void printError(const uint8_t errorType, const char* errorMsg)
     switch(errorType)
     {
         case 0:
-            write(STDERR_FILENO, "Error: must input numbers seperated by a space\n", 47);
+            write(STDERR_FILENO, "Error: must input non-zero numbers seperated by a space\n", 56);
             write(STDERR_FILENO, "Usage: 13 -12 4 ...\n", 20);
             break;
         case 1:
@@ -281,17 +281,18 @@ bool validateString(char *charBuffer, int numOfChars)
     //Check to see if user string contains non numbers 
     for(int indx = 0; indx < numOfChars - 1; indx++)
     {
-        //Make sure current char is a number, minus sign, space or newline 
+        //Make sure current char is a number, minus sign, 
+        //space, newline or filler char
         if((charBuffer[indx] < 48 || charBuffer[indx] > 57) 
                 && !((charBuffer[indx] == 32) || (charBuffer[indx] == 45)
-                    || (charBuffer[indx] == '\n') || (charBuffer[indx] == '\0')))
+                    || (charBuffer[indx] == '\n') || (charBuffer[indx] == '\0') 
+                    || (charBuffer[indx] == FILLER_CHAR)))
         {
 #ifdef DEBUG
             int charVal = 0;
             charVal = charBuffer[indx];
             printf("\nERROR: invalid char: %d\n", charVal);
 #endif
-
             return false;
         }
     }

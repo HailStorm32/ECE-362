@@ -53,16 +53,22 @@ clean:
 test: 
 	@echo "compiled"
 	@echo "running code "
+	@echo "Running: timer"
 	@echo "--------------------"
-	./$(EXE) test.txt -5
+	./timer ls -l /bin 
+	@echo " "
+	./timer cat test.txt
+	@echo " "
+	./timer cat test2.txt
+	@echo " "
+	@echo "--------------------"
+	@echo "Running: piper"
+	@echo "--------------------"
 	@echo ""
-	./$(EXE) test.txt
+	./piper < test.txt
 	@echo ""
-	./$(EXE) test.txt -15
+	./piper < test2.txt
 	@echo ""
-	./$(EXE) test.txt -2
-	@echo ""
-	./$(EXE) -4
 
 help:
 	@echo "all compile clean test help"
