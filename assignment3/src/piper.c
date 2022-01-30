@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
             //printf("%d, ", numbers[indx]);
         }
         memset(buff, '\0', NUM_BUFF_SIZE);
-        my_itoa(sumTotal, buff, 10); 
+        itoa(sumTotal, buff); 
 
         print(STDOUT_FILENO, "\nSum:");
         print(STDOUT_FILENO, buff);
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
             }
             //printf("PROT: %d\n", productTotal);
             memset(buff, '\0', NUM_BUFF_SIZE);
-            my_itoa(productTotal, buff, 10); 
+            itoa(productTotal, buff); 
             //printf("PROT_str: %s\n", buff);
 
             print(STDOUT_FILENO, "\nProduct:");

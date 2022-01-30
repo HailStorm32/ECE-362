@@ -1,76 +1,35 @@
+#include <string.h>
 #include <stdbool.h>
-#include <stdio.h>
 
-//Credit: waaagh on Stackoveflow
-//https://stackoverflow.com/a/16095691
-#define INT_LEN (10)
-#define HEX_LEN (8)
-#define BIN_LEN (32)
-#define OCT_LEN (11)
+//Credit: Kernighan and Ritchie's The C Programming Language
+//https://en.wikibooks.org/wiki/C_Programming/stdlib.h/itoa
 
-static char *  my_itoa ( int value, char * str, int base )
+/* itoa:  convert n to characters in s */
+void itoa(int n, char s[])
 {
-    int i,n =2,tmp;
-    char buf[BIN_LEN+1];
-    
-    switch(base)
-    {
-        case 16:
-            for(i = 0;i<HEX_LEN;++i)
-            {
-                if(value/base>0)
-                {
-                    n++;
-                }
-            }
-            snprintf(str, n, "%x" ,value);
-            break;
-        case 10:
-            for(i = 0;i<INT_LEN;++i)
-            {
-                if(value/base>0)
-                {
-                    n++;
-                }
-            }
-            snprintf(str, 100, "%d" ,value);
-            break;
-        case 8:
-            for(i = 0;i<OCT_LEN;++i)
-            {
-                if(value/base>0)
-                {
-                    n++;
-                }
-            }
-            snprintf(str, n, "%o" ,value);
-            break;
-        case 2:
-            for(i = 0,tmp = value;i<BIN_LEN;++i)
-            {
-                if(tmp/base>0)
-                {
-                    n++;
-                }
-                tmp/=base;
-            }
-            for(i = 1 ,tmp = value; i<n;++i)
-            {
-                if(tmp%2 != 0)
-                {
-                    buf[n-i-1] ='1';
-                }
-                else
-                {
-                    buf[n-i-1] ='0';
-                }
-                tmp/=base;
-            }
-            buf[n-1] = '\0';
-            strcpy(str,buf);
-            break;
-        default:
-            return NULL;
+    int i, sign;
+
+    if ((sign = n) < 0)  /* record sign */
+        n = -n;          /* make n positive */
+    i = 0;
+    do {       /* generate digits in reverse order */
+        s[i++] = n % 10 + '0';   /* get next digit */
+    } while ((n /= 10) > 0);     /* delete it */
+    if (sign < 0)
+        s[i++] = '-';
+    s[i] = '\0';
+    reverse(s);
+}
+
+/* reverse:  reverse string s in place */
+void reverse(char s[])
+{
+    int i, j;
+    char c;
+
+    for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+        c = s[i];
+        s[i] = s[j];
+        s[j] = c;
     }
-    return str;
 }
