@@ -18,8 +18,8 @@ OBJ := $(patsubst %.c,%.o,$(wildcard $(SRC_DIR)/*.c))
 #All .h files
 HEADERS = $(wildcard $(IDIR)/*.h)
 
-CFLAGS = -Wall -I$(IDIR)/ -std=c11 #c++11 is for compatibility with PSU servers
-LDFLAGS = 
+CFLAGS = -Wall -I$(IDIR)/ -std=c11  #c++11 is for compatibility with PSU servers
+LDFLAGS = -pthread
 EXE = header
 
 .PHONY: all compile clean test 
@@ -33,18 +33,18 @@ EXE = header
 
 
 
-all : timer piper clean test
+all : seeker seeker-base clean test
 
-timer : timer.o
-	@$(GXX) -o $@ $^
+seeker : seeker.o
+	@$(GXX) $(LDFLAGS) -o $@ $^
 
-timer.o : $(SRC_DIR)/timer.c $(HEADERS)
+seeker.o : $(SRC_DIR)/seeker.c $(HEADERS)
 	@$(GXX) $(CFLAGS) -c $< -o $@
 
-piper : piper.o
-	@$(GXX) -o $@ $^
+seeker-base : seeker-base.o
+	@$(GXX) $(LDFLAGS) -o $@ $^
 
-piper.o : $(SRC_DIR)/piper.c $(HEADERS)
+seeker-base.o : $(SRC_DIR)/seeker-base.c $(HEADERS)
 	@$(GXX) $(CFLAGS) -c $< -o $@
 
 clean:
@@ -55,22 +55,12 @@ test:
 	@echo "running code "
 	@echo "Running: timer"
 	@echo "--------------------"
-	./timer ls -l /bin 
-	@echo " "
-	./timer sleep 5 
-	@echo " "
-	./timer cat test.txt
-	@echo " "
-	./timer cat test2.txt
 	@echo " "
 	@echo "--------------------"
-	@echo "Running: piper"
+	@echo "Running: seeker-base"
 	@echo "--------------------"
 	@echo ""
-	./piper < test.txt
-	@echo ""
-	./piper < test2.txt
 	@echo ""
 
 help:
-	@echo "all compile clean test help"
+	@echo "all compile clean seeker seeker-base help"

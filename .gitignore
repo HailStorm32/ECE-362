@@ -6,3 +6,5 @@ piper
 *.zip
 output.log
 *.o
+seeker
+seeker-base
