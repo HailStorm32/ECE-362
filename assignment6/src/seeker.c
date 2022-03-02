@@ -58,6 +58,7 @@ void makeAnImage() {
 void sequenceFind(void *givenArgs)
 {
     argStruct_t *args = (argStruct_t*)givenArgs;
+    //printf("rowStart: %d\nrowEnd: %d\nindx: %d", args->rowStart, args->rowEnd, args->resultIndx);
 
     //Search the rows we were given
     for(uint16_t row=args->rowStart; row < args->rowEnd; row++)
@@ -73,7 +74,7 @@ int main(int argc, char *argv[])
 {
     int sequencesFound = 0;
     uint16_t rowStart = 0;
-    uint8_t numOfTasks = 0;
+    uint16_t numOfTasks = 0;
     int rc; 
 
     if(argc <= 1){ printf("\nInvalid Arguments\n"); exit(-1);}
