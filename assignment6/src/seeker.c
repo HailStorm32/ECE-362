@@ -57,6 +57,10 @@ void makeAnImage() {
 
 void sequenceFind(void *givenArgs)
 {
+    pthread_t tid;
+    tid = pthread_self();
+    printf("\nthread ID: %lu", (unsigned long)tid);
+
     argStruct_t *args = (argStruct_t*)givenArgs;
     //printf("rowStart: %d\nrowEnd: %d\nindx: %d", args->rowStart, args->rowEnd, args->resultIndx);
 
@@ -76,11 +80,11 @@ void spawnThreads(uint8_t numOfThreads, pthread_t* threads, argStruct_t* args)
     uint16_t rowStart = 0;
     int rc; 
     
+    numOfTasks = Rows/numOfThreads;
+    
     //Cycle through and create all the threads
     for(uint8_t indx = 0; indx < numOfThreads; indx++)
     {
-        numOfTasks = Rows/numOfThreads;
-
         //Set arguments for thread
         args[indx].resultIndx = indx;
         args[indx].rowStart = rowStart;
@@ -115,6 +119,7 @@ int main(int argc, char *argv[])
 
     if(numThreads == 1)
     {
+        printf("\n1 thread:\n");
             pthread_t threads[1];
             argStruct_t *threadArgs[1];
 
@@ -125,6 +130,7 @@ int main(int argc, char *argv[])
     }
     else if(numThreads == 2)
     {
+        printf("\n2 thread:\n");
             pthread_t threads[2];
             argStruct_t *threadArgs[2];
 
@@ -139,6 +145,7 @@ int main(int argc, char *argv[])
     }
     else if(numThreads == 4)
     {
+        printf("\n4 thread:\n");
             pthread_t threads[4];
             argStruct_t *threadArgs[4];
 
@@ -153,6 +160,7 @@ int main(int argc, char *argv[])
     }
     else if(numThreads == 8)
     {
+        printf("\n8 thread:\n");
             pthread_t threads[8];
             argStruct_t *threadArgs[8];
 
@@ -167,6 +175,7 @@ int main(int argc, char *argv[])
     }
     else if(numThreads == 16)
     {
+        printf("\n16 thread:\n");
             pthread_t threads[16];
             argStruct_t *threadArgs[16];
 
