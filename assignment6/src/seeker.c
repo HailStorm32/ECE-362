@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
         {
             printf("\n2 thread:\n");
         }
-        
+
         pthread_t threads[2];
         argStruct_t *threadArgs[2];
 
@@ -159,6 +159,38 @@ int main(int argc, char *argv[])
             rc = pthread_join(threads[indx], NULL); 
             assert(rc == 0);
         }
+       /* uint16_t numOfTasks = 0;
+        uint16_t rowStart = 0;
+        int rc; 
+
+        argStruct_t arg1, arg2;
+        pthread_t thread1, thread2;
+
+        numOfTasks = Rows/numThreads;
+
+        //Set arguments for thread
+        arg1.resultIndx = 0;
+        arg1.rowStart = rowStart;
+        arg1.rowEnd = rowStart + numOfTasks;
+
+        //Create thread and return an error if fails
+        rc = pthread_create(&thread1, NULL, sequenceFind, (void*)&arg1);
+        assert(rc == 0);
+
+        rowStart += numOfTasks;//Move the starting row by the # of tasks
+
+        arg2.resultIndx = 1;
+        arg2.rowStart = rowStart;
+        arg2.rowEnd = rowStart + numOfTasks;
+
+        //Create thread and return an error if fails
+        rc = pthread_create(&thread2, NULL, sequenceFind, (void*)&arg2);
+        assert(rc == 0);
+
+        rc = pthread_join(thread1, NULL); 
+        assert(rc == 0);
+        rc = pthread_join(thread2, NULL); 
+        assert(rc == 0);*/
     }
     else if(numThreads == 4)
     {
