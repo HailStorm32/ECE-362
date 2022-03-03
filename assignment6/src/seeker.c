@@ -23,6 +23,7 @@ int Cols        = MAX_COLS;
 int Detect_len  = DETECT_LEN;
 int Image[MAX_ROWS][MAX_COLS];
 int numThreads = DEFAULT_THREADS;
+uint8_t debugLvl = 0;
 int threadResults[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 typedef struct
@@ -57,12 +58,19 @@ void makeAnImage() {
 
 void sequenceFind(void *givenArgs)
 {
-    pthread_t tid;
-    tid = pthread_self();
-    printf("\nthread ID: %lu", (unsigned long)tid);
+    if(debugLvl >= 2)
+    {
+        pthread_t tid;
+        tid = pthread_self();
+        printf("\nthread ID: %lu", (unsigned long)tid);
+    }
 
     argStruct_t *args = (argStruct_t*)givenArgs;
-    printf("\n\nrowStart: %d\nrowEnd: %d\nindx: %d\n\n\n", args->rowStart, args->rowEnd, args->resultIndx);
+
+    if(debugLvl >= 3)
+    {
+        printf("\n\nrowStart: %d\nrowEnd: %d\nindx: %d\n\n\n", args->rowStart, args->rowEnd, args->resultIndx);
+    }
 
     //Search the rows we were given
     for(uint16_t row=args->rowStart; row < args->rowEnd; row++)
@@ -79,9 +87,9 @@ void spawnThreads(uint8_t numOfThreads, pthread_t* threads, argStruct_t* args)
     uint16_t numOfTasks = 0;
     uint16_t rowStart = 0;
     int rc; 
-    
+
     numOfTasks = Rows/numOfThreads;
-    
+
     //Cycle through and create all the threads
     for(uint8_t indx = 0; indx < numOfThreads; indx++)
     {
@@ -112,6 +120,7 @@ int main(int argc, char *argv[])
         else if (strcmp(argv[0], "-c" ) == 0 ) Cols = atoi(argv[1]);
         else if (strcmp(argv[0], "-l" ) == 0 ) Detect_len = atoi(argv[1]);
         else if (strcmp(argv[0], "-t" ) == 0 ) numThreads = atoi(argv[1]);
+        else if (strcmp(argv[0], "-d" ) == 0 ) debugLvl = atoi(argv[1]);
         else { printf("\nInvalid Arguments\n"); exit(-1); }
     }
 
@@ -119,74 +128,94 @@ int main(int argc, char *argv[])
 
     if(numThreads == 1)
     {
-        printf("\n1 thread:\n");
-            pthread_t threads[1];
-            argStruct_t *threadArgs[1];
+        if(debugLvl >= 1)
+        {
+            printf("\n1 thread:\n");
+        }
 
-            spawnThreads(1, threads, threadArgs);
+        pthread_t threads[1];
+        argStruct_t *threadArgs[1];
 
-            //Wait for threads to finish
-            rc = pthread_join(threads[0], NULL); assert(rc == 0);
+        spawnThreads(1, threads, threadArgs);
+
+        //Wait for threads to finish
+        rc = pthread_join(threads[0], NULL); assert(rc == 0);
     }
     else if(numThreads == 2)
     {
-        printf("\n2 thread:\n");
-            pthread_t threads[2];
-            argStruct_t *threadArgs[2];
+        if(debugLvl >= 1)
+        {
+            printf("\n2 thread:\n");
+        }
+        
+        pthread_t threads[2];
+        argStruct_t *threadArgs[2];
 
-            spawnThreads(numThreads, threads, threadArgs);
+        spawnThreads(numThreads, threads, threadArgs);
 
-            //Wait for threads to finish
-            for(uint8_t indx = 0; indx < numThreads; indx++)
-            {
-                rc = pthread_join(threads[indx], NULL); 
-                assert(rc == 0);
-            }
+        //Wait for threads to finish
+        for(uint8_t indx = 0; indx < numThreads; indx++)
+        {
+            rc = pthread_join(threads[indx], NULL); 
+            assert(rc == 0);
+        }
     }
     else if(numThreads == 4)
     {
-        printf("\n4 thread:\n");
-            pthread_t threads[4];
-            argStruct_t *threadArgs[4];
+        if(debugLvl >= 1)
+        {
+            printf("\n4 thread:\n");
+        }
 
-            spawnThreads(numThreads, threads, threadArgs);
+        pthread_t threads[4];
+        argStruct_t *threadArgs[4];
 
-            //Wait for threads to finish
-            for(uint8_t indx = 0; indx < numThreads; indx++)
-            {
-                rc = pthread_join(threads[indx], NULL); 
-                assert(rc == 0);
-            }
+        spawnThreads(numThreads, threads, threadArgs);
+
+        //Wait for threads to finish
+        for(uint8_t indx = 0; indx < numThreads; indx++)
+        {
+            rc = pthread_join(threads[indx], NULL); 
+            assert(rc == 0);
+        }
     }
     else if(numThreads == 8)
     {
-        printf("\n8 thread:\n");
-            pthread_t threads[8];
-            argStruct_t *threadArgs[8];
+        if(debugLvl >= 1)
+        {
+            printf("\n8 thread:\n");
+        }
 
-            spawnThreads(numThreads, threads, threadArgs);
+        pthread_t threads[8];
+        argStruct_t *threadArgs[8];
 
-            //Wait for threads to finish
-            for(uint8_t indx = 0; indx < numThreads; indx++)
-            {
-                rc = pthread_join(threads[indx], NULL); 
-                assert(rc == 0);
-            }
+        spawnThreads(numThreads, threads, threadArgs);
+
+        //Wait for threads to finish
+        for(uint8_t indx = 0; indx < numThreads; indx++)
+        {
+            rc = pthread_join(threads[indx], NULL); 
+            assert(rc == 0);
+        }
     }
     else if(numThreads == 16)
     {
-        printf("\n16 thread:\n");
-            pthread_t threads[16];
-            argStruct_t *threadArgs[16];
+        if(debugLvl >= 1)
+        {
+            printf("\n16 thread:\n");
+        }
 
-            spawnThreads(numThreads, threads, threadArgs);
+        pthread_t threads[16];
+        argStruct_t *threadArgs[16];
 
-            //Wait for threads to finish
-            for(uint8_t indx = 0; indx < numThreads; indx++)
-            {
-                rc = pthread_join(threads[indx], NULL); 
-                assert(rc == 0);
-            }
+        spawnThreads(numThreads, threads, threadArgs);
+
+        //Wait for threads to finish
+        for(uint8_t indx = 0; indx < numThreads; indx++)
+        {
+            rc = pthread_join(threads[indx], NULL); 
+            assert(rc == 0);
+        }
     }
     else
     {
