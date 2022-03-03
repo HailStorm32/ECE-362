@@ -84,11 +84,11 @@ void sequenceFind(void *givenArgs)
 
 void spawnThreads(uint8_t numOfThreads, pthread_t* threads, argStruct_t* args)
 {
-    uint16_t numOfTasks = 0;
+    uint16_t rowsPerThread = 0;
     uint16_t rowStart = 0;
     int rc; 
 
-    numOfTasks = Rows/numOfThreads;
+    rowsPerThread = Rows/numOfThreads;
 
     //Cycle through and create all the threads
     for(uint8_t indx = 0; indx < numOfThreads; indx++)
@@ -96,13 +96,13 @@ void spawnThreads(uint8_t numOfThreads, pthread_t* threads, argStruct_t* args)
         //Set arguments for thread
         args[indx].resultIndx = indx;
         args[indx].rowStart = rowStart;
-        args[indx].rowEnd = rowStart + numOfTasks;
+        args[indx].rowEnd = rowStart + rowsPerThread;
 
         //Create thread and return an error if fails
         rc = pthread_create(&threads[indx], NULL, sequenceFind, (void*)&args[indx]);
         assert(rc == 0);
 
-        rowStart += numOfTasks;//Move the starting row by the # of tasks
+        rowStart += rowsPerThread;//Move the starting row by the # of tasks
     }
 }
 
@@ -126,119 +126,17 @@ int main(int argc, char *argv[])
 
     makeAnImage();
 
-    if(numThreads == 1)
+    //Only run if we were given a valid thread count
+    if((((numThreads % 2) == 0) && (numThreads > 0 && numThreads < 17)) 
+            || numThreads == 1)
     {
         if(debugLvl >= 1)
         {
-            printf("\n1 thread:\n");
+            printf("\n%d thread:\n", numThreads);
         }
 
-        pthread_t threads[1];
-        argStruct_t *threadArgs[1];
-
-        spawnThreads(1, threads, threadArgs);
-
-        //Wait for threads to finish
-        rc = pthread_join(threads[0], NULL); assert(rc == 0);
-    }
-    else if(numThreads == 2)
-    {
-        if(debugLvl >= 1)
-        {
-            printf("\n2 thread:\n");
-        }
-
-        pthread_t threads[2];
-        argStruct_t *threadArgs[2];
-
-        spawnThreads(numThreads, threads, threadArgs);
-
-        //Wait for threads to finish
-        for(uint8_t indx = 0; indx < numThreads; indx++)
-        {
-            rc = pthread_join(threads[indx], NULL); 
-            assert(rc == 0);
-        }
-       /* uint16_t numOfTasks = 0;
-        uint16_t rowStart = 0;
-        int rc; 
-
-        argStruct_t arg1, arg2;
-        pthread_t thread1, thread2;
-
-        numOfTasks = Rows/numThreads;
-
-        //Set arguments for thread
-        arg1.resultIndx = 0;
-        arg1.rowStart = rowStart;
-        arg1.rowEnd = rowStart + numOfTasks;
-
-        //Create thread and return an error if fails
-        rc = pthread_create(&thread1, NULL, sequenceFind, (void*)&arg1);
-        assert(rc == 0);
-
-        rowStart += numOfTasks;//Move the starting row by the # of tasks
-
-        arg2.resultIndx = 1;
-        arg2.rowStart = rowStart;
-        arg2.rowEnd = rowStart + numOfTasks;
-
-        //Create thread and return an error if fails
-        rc = pthread_create(&thread2, NULL, sequenceFind, (void*)&arg2);
-        assert(rc == 0);
-
-        rc = pthread_join(thread1, NULL); 
-        assert(rc == 0);
-        rc = pthread_join(thread2, NULL); 
-        assert(rc == 0);*/
-    }
-    else if(numThreads == 4)
-    {
-        if(debugLvl >= 1)
-        {
-            printf("\n4 thread:\n");
-        }
-
-        pthread_t threads[4];
-        argStruct_t *threadArgs[4];
-
-        spawnThreads(numThreads, threads, threadArgs);
-
-        //Wait for threads to finish
-        for(uint8_t indx = 0; indx < numThreads; indx++)
-        {
-            rc = pthread_join(threads[indx], NULL); 
-            assert(rc == 0);
-        }
-    }
-    else if(numThreads == 8)
-    {
-        if(debugLvl >= 1)
-        {
-            printf("\n8 thread:\n");
-        }
-
-        pthread_t threads[8];
-        argStruct_t *threadArgs[8];
-
-        spawnThreads(numThreads, threads, threadArgs);
-
-        //Wait for threads to finish
-        for(uint8_t indx = 0; indx < numThreads; indx++)
-        {
-            rc = pthread_join(threads[indx], NULL); 
-            assert(rc == 0);
-        }
-    }
-    else if(numThreads == 16)
-    {
-        if(debugLvl >= 1)
-        {
-            printf("\n16 thread:\n");
-        }
-
-        pthread_t threads[16];
-        argStruct_t *threadArgs[16];
+        pthread_t threads[numThreads];
+        argStruct_t *threadArgs[numThreads];
 
         spawnThreads(numThreads, threads, threadArgs);
 
