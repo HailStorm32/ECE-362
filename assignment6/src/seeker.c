@@ -62,7 +62,7 @@ void sequenceFind(void *givenArgs)
     printf("\nthread ID: %lu", (unsigned long)tid);
 
     argStruct_t *args = (argStruct_t*)givenArgs;
-    //printf("rowStart: %d\nrowEnd: %d\nindx: %d", args->rowStart, args->rowEnd, args->resultIndx);
+    printf("\n\nrowStart: %d\nrowEnd: %d\nindx: %d\n\n\n", args->rowStart, args->rowEnd, args->resultIndx);
 
     //Search the rows we were given
     for(uint16_t row=args->rowStart; row < args->rowEnd; row++)
