@@ -70,13 +70,36 @@ void sequenceFind(void *givenArgs)
     }
 }
 
+void spawnThreads(uint8_t numOfThreads, pthread_t* threads, argStruct_t* args)
+{
+    uint16_t numOfTasks = 0;
+    uint16_t rowStart = 0;
+    int rc; 
+    
+    //Cycle through and create all the threads
+    for(uint8_t indx = 0; indx < numOfThreads; indx++)
+    {
+        numOfTasks = Rows/numOfThreads;
+
+        //Set arguments for thread
+        args[indx].resultIndx = indx;
+        args[indx].rowStart = rowStart;
+        args[indx].rowEnd = rowStart + numOfTasks;
+
+        //Create thread and return an error if fails
+        rc = pthread_create(&threads[indx], NULL, sequenceFind, (void*)&args[indx]);
+        assert(rc == 0);
+
+        rowStart += numOfTasks;//Move the starting row by the # of tasks
+    }
+}
+
 int main(int argc, char *argv[]) 
 {
     int sequencesFound = 0;
-    uint16_t rowStart = 0;
-    uint16_t numOfTasks = 0;
     int rc; 
 
+    //Error if we dont have arguments
     if(argc <= 1){ printf("\nInvalid Arguments\n"); exit(-1);}
 
     for( argc--, argv++; argc > 0; argc-=2, argv+=2  ) {
@@ -90,65 +113,77 @@ int main(int argc, char *argv[])
 
     makeAnImage();
 
-    switch(numThreads)
+    if(numThreads == 1)
     {
-        case 1:
-            argStruct_t args;
+            pthread_t threads[1];
+            argStruct_t *threadArgs[1];
 
-            numOfTasks = Rows/1;
-            
-            args.resultIndx = 0;
-            args.rowStart = rowStart;
-            args.rowEnd = rowStart + numOfTasks;
-
-            sequenceFind(&args);
-            break;
-        case 2:
-            pthread_t thread1, thread2;
-
-            numOfTasks = Rows/2;
-
-            //Create structs for the arguments passed to the threads
-            argStruct_t *thread1Args = malloc(sizeof(argStruct_t));
-            argStruct_t *thread2Args = malloc(sizeof(argStruct_t));
-            
-            //Set arguments for thread 1
-            thread1Args->resultIndx = 0;
-            thread1Args->rowStart = rowStart;
-            thread1Args->rowEnd = rowStart + numOfTasks;
-
-            //Create thread 1 and return an error if fails
-            rc = pthread_create(&thread1, NULL, sequenceFind, (void*)thread1Args);
-            assert(rc == 0);
-
-            rowStart += numOfTasks;//Move the starting row by the # of tasks
-
-            //Set arguments for thread 2
-            thread2Args->resultIndx = 1;
-            thread2Args->rowStart = rowStart;
-            thread2Args->rowEnd = rowStart + numOfTasks;
-
-            //Create thread 1 and return an error if fails
-            rc = pthread_create(&thread2, NULL, sequenceFind, (void*)thread2Args);
-            assert(rc == 0);
+            spawnThreads(1, threads, threadArgs);
 
             //Wait for threads to finish
-            rc = pthread_join(thread1, NULL); assert(rc == 0);
-            rc = pthread_join(thread2, NULL); assert(rc == 0);
-
-            break;
-        case 4:
-            break;
-        case 8:
-            break;
-        case 16:
-            break;
-        default:
-            printf("\nInvalid number of threads");
-            exit(-1);
+            rc = pthread_join(threads[0], NULL); assert(rc == 0);
     }
+    else if(numThreads == 2)
+    {
+            pthread_t threads[2];
+            argStruct_t *threadArgs[2];
 
-    
+            spawnThreads(numThreads, threads, threadArgs);
+
+            //Wait for threads to finish
+            for(uint8_t indx = 0; indx < numThreads; indx++)
+            {
+                rc = pthread_join(threads[indx], NULL); 
+                assert(rc == 0);
+            }
+    }
+    else if(numThreads == 4)
+    {
+            pthread_t threads[4];
+            argStruct_t *threadArgs[4];
+
+            spawnThreads(numThreads, threads, threadArgs);
+
+            //Wait for threads to finish
+            for(uint8_t indx = 0; indx < numThreads; indx++)
+            {
+                rc = pthread_join(threads[indx], NULL); 
+                assert(rc == 0);
+            }
+    }
+    else if(numThreads == 8)
+    {
+            pthread_t threads[8];
+            argStruct_t *threadArgs[8];
+
+            spawnThreads(numThreads, threads, threadArgs);
+
+            //Wait for threads to finish
+            for(uint8_t indx = 0; indx < numThreads; indx++)
+            {
+                rc = pthread_join(threads[indx], NULL); 
+                assert(rc == 0);
+            }
+    }
+    else if(numThreads == 16)
+    {
+            pthread_t threads[16];
+            argStruct_t *threadArgs[16];
+
+            spawnThreads(numThreads, threads, threadArgs);
+
+            //Wait for threads to finish
+            for(uint8_t indx = 0; indx < numThreads; indx++)
+            {
+                rc = pthread_join(threads[indx], NULL); 
+                assert(rc == 0);
+            }
+    }
+    else
+    {
+        printf("\nInvalid number of threads");
+        exit(-1);
+    }
 
 
     //Add all the counts from the threads
