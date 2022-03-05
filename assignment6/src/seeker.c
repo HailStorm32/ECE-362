@@ -58,6 +58,8 @@ void makeAnImage() {
 
 void sequenceFind(void *givenArgs)
 {
+    int numOfMatches = 0;
+
     if(debugLvl >= 2)
     {
         pthread_t tid;
@@ -77,9 +79,10 @@ void sequenceFind(void *givenArgs)
     {
         for(uint16_t col=0; col < Cols; col++)
         {
-            threadResults[args->resultIndx] += checkForMatch(row,col);
+            numOfMatches += checkForMatch(row,col);
         }
     }
+    threadResults[args->resultIndx] = numOfMatches;
 }
 
 void spawnThreads(uint8_t numOfThreads, pthread_t* threads, argStruct_t* args)
